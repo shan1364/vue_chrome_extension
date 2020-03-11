@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style type="text/css">
+    body {
+      width: 500px;
+      font-family: Microsoft JhengHei;
+    }
+
+    .header {
+      height: 30vh;
+      background-image: url(fb_adjust.jpg);
+      background-size: cover;
+      background-position: center center;
+    }
+
+    .pic {
+      height: 12vh;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" type="text/css" href="popup.css"> -->
+
+  <% if (NODE_ENV === 'development') { %>
+  <!-- Load some resources only in development environment -->
+  <% } %>
+</head>
+
+<body>
+  <header class="header d-flex justify-content-center align-items-end">
+    <img src="header.png" class="pic"></div>
+  </header>
+
+  <div id="app">
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>
