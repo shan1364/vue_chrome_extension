@@ -20,10 +20,39 @@
     .pic {
       height: 12vh;
     }
+
+    hr.style-one {
+      /* border: 100px; */
+      height: 1px;
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+    }
+
+    .container {
+      background-color: #fafafa;
+    }
+
+    .button {
+      color: white;
+      background-color: #5bc0de;
+      border-color: #46b8da;
+      /* background-color: #000000; */
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 30px;
+    }
+    .button:hover {
+      background-color: #2badd4;
+    }
   </style>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <!-- <link rel="stylesheet" type="text/css" href="popup.css"> -->
+  <link rel="stylesheet" type="text/css" href="popup.css">
 
   <% if (NODE_ENV === 'development') { %>
   <!-- Load some resources only in development environment -->
