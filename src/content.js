@@ -19,33 +19,61 @@ function getProfile() {
     return return_item;
 }
 
-function getComment() {
+async function getComment() {
     let comment_arr = [];
-    let comments = document.querySelector('.fbPhotosSnowliftFeedback').nextElementSibling.querySelector('h6').parentElement.querySelectorAll('.clearfix');
+    let comments = document.querySelector('.fbPhotosSnowliftFeedback').nextElementSibling.querySelector('h6').parentNode.querySelectorAll('.clearfix');
     
     let index = 1;
     for(let i=0; i < comments.length; i++) {
         //沒有timestamp表示不是留言
         if((comments[i].querySelector('.livetimestamp')) !== null) {
             var comment_span = comments[i].querySelectorAll('div')[3].querySelectorAll('span').length;
-            if(comments[i].querySelectorAll('div')[3].querySelectorAll('span')[0].innerText == '' && comment_span<3) continue;
+            if(comments[i].querySelectorAll('div')[3].querySelector('span').innerText == '' && comment_span < 3) continue;
             else {
-                let regex_arr = [];
-                let content = comments[i].querySelectorAll('div')[3].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
-                let user_name = comments[i].querySelectorAll('div')[3].querySelector('a').innerText;                let name_regex = '^' + user_name; regex_arr.push(name_regex);
-                let str = 'Hide or report this' + '$'; regex_arr.push(str);
-                let content_regex = new RegExp(regex_arr.join("|"),"gmi"); 
-                //console.log(content_regex);
-                let content_filter = content.replace(content_regex, '');
-                let comment_content = content_filter.replace(/(\r\n|\n|\r)/gm, "").trim();                
-
+                let content = (comments[i].querySelectorAll('div')[3].querySelector('span').innerText == "") ? comments[i].querySelectorAll('div')[3].querySelectorAll('span')[3].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim() : comments[i].querySelectorAll('div')[3].querySelector('span').innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+                let name = comments[i].querySelectorAll('div')[3].querySelector('a').innerText;
                 var level_text = comments[i].getAttribute('aria-label');
                 if (level_text.search(/reply/i) >= 0) var level = 2;
                 else var level = 1;
-                var comment_obj = { id: index, user: user_name, content: comment_content, level: level };
-                //console.log(i, comment_obj);
+                let comment_link = comments[i].querySelector('.livetimestamp').parentNode.getAttribute('href');
+                let reply_index = comment_link.search("&reply_comment_id=");
+                if(reply_index >= 0) { //是第2層的留言
+                    var comment_id = comment_link.split("&reply_comment_id")[0].split("comment_id=")[1];
+                    var reply_comment_id = comment_link.slice(reply_index + "&reply_comment_id=".length);
+                } else {
+                    var comment_index = comment_link.search("comment_id=") + "comment_id=".length;
+                    var comment_id = comment_link.slice(comment_index);
+                    var reply_comment_id = '';
+                }
+                let user_id = comments[i].querySelector('.lfloat > a').getAttribute('data-hovercard').split('user.php?id=')[1];
+                
+                let time_text = comments[i].querySelector('.livetimestamp').getAttribute('data-tooltip-content');
+                let month = time_text.split(",")[1].trim();
+                let year = time_text.split(",")[2].split("at")[0].trim();
+                let time = time_text.split(",")[2].split("at")[1].trim();
+                let time_str = ''.concat(month, ' ', year, ' ', time);
+                let timestamp = Date.parse(time_str) / 1000;
+
+                if(comments[i].querySelector("[aria-label='See who reacted to this']") == null) var like = 0;
+                else {
+                    comments[i].scrollIntoView({ block: "center"});
+                    let like_time_count = 0;
+                    while(true) {
+                        let like_text = comments[i].querySelector("[aria-label='See who reacted to this']").innerText;
+                        if(like_text !== "" || like_time_count >= 10) break;
+                        else {
+                            like_time_count++;
+                            await delay(1000);
+                        } 
+                    }
+                    var like = comments[i].querySelector("[aria-label='See who reacted to this']").innerText == "" ? 0 : parseInt(comments[i].querySelector("[aria-label='See who reacted to this']").innerText, 10);
+                    console.log(like);
+                }
+                
+                var comment_obj = { id: index,comment_id: comment_id, reply_comment_id: reply_comment_id, user_id: user_id, time: timestamp, name: name, content: content, like: like, level: level };
+                console.log(i, comment_obj);
                 comment_arr.push(comment_obj);  
-                index++;     
+                index++;  
             }
             
         }
@@ -70,31 +98,31 @@ async function clickComments() {
                 var check_count = 0;
                 while(true) {
                     var last_len = comment_area.querySelectorAll('.clearfix').length;
-                    if(origin_len !== last_len || check_count>=20) break;
+                    if(origin_len !== last_len || check_count>=10) break;
                     else check_count++;
                 }
                 count++;
                 console.log('click:', i);
             }
         }
-        if (count == 0 || check_count>=20) return;
+        if (count == 0 || check_count>=10) return;
     }
 }
 
 function check_comments() {
     let comment_ele = (document.querySelector('.fbPhotosSnowliftFeedback')==null) ? false: ( (document.querySelector('.fbPhotosSnowliftFeedback').nextElementSibling==null) ? false : document.querySelector('.fbPhotosSnowliftFeedback').nextElementSibling.querySelector('h6') ==null? false: document.querySelector('.fbPhotosSnowliftFeedback').nextElementSibling.querySelector('h6').parentElement ==null? false: true);
-    console.log('check:', comment_ele);
+    //console.log('check:', comment_ele);
     return comment_ele;
 }
 
 async function wait_comments() {
     let check_ele = await check_comments();
     if(!check_ele) {
-        chrome.storage.sync.set({ comment: {state: '', data: '' }}, function() { });
+        chrome.storage.local.set({ comment: {state: '', data: '' }}, function() { });
     }else{
         await clickComments();
         let comment_item = await getComment();
-        chrome.storage.sync.set({ comment: {state: 'finish', data: comment_item }}, function() { });
+        chrome.storage.local.set({ comment: {state: 'finish', data: comment_item }}, function() { });
     }   
 }
 
@@ -104,7 +132,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
     for(const storage_key of storage_keys) {
         //console.log('change keys:', storage_key);
         if(storage_key == 'comment') { //更改的是 留言區
-            chrome.storage.sync.get('comment', function (data) {
+            chrome.storage.local.get('comment', function (data) {
                 //console.log('origin comment storage data:', data);
                 if(data.comment.state == 'fetch_comment') {
                      wait_comments();
@@ -112,7 +140,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
                
             })
         } else if(storage_key == 'profile') { //更改的是 個人頁面區
-            chrome.storage.sync.get('profile', function (item) {
+            chrome.storage.local.get('profile', function (item) {
                 //console.log('origin  profile storage data:', data);
                 let storage_profile_data = item.profile.data;
                 let storage_profile_keys = Object.keys(storage_profile_data);
@@ -123,7 +151,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
                         storage_profile_data[key].data = profile_item;
                         storage_profile_data[key].state = 'finish';
                         console.log('now url:', current_url, ', insert data:', storage_profile_data[key]);
-                        chrome.storage.sync.set({ profile: { data: storage_profile_data } }, function () { });
+                        chrome.storage.local.set({ profile: { data: storage_profile_data } }, function () { });
                         break;
                     }
 
