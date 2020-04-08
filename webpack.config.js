@@ -90,6 +90,8 @@ const config = {
           return JSON.stringify(jsonContent, null, 2);
         },
       },
+      { from: 'popup/img', to: 'popup/img'},
+      { from: 'input_data', to: 'input_data'}
     ]),
   ],
 };
