@@ -1,79 +1,96 @@
 <template>
   <div id="app" class="container">
     <div class="container">
-      <div class="row">
-        <div class="col">
-          <hr class="style-one" />
-          <!-- <p>輸入Facebook個人介紹連結(可多個),並以逗號隔開 :</p> -->
-          <form>
-            <div class="form-group">
-              <label for="inputLink">輸入Facebook個人介紹連結(可多個),並以逗號隔開 :</label>
-              <textarea
-                class="form-control"
-                id="inputArea"
+     <div class="card border-secondary">
+       <div class="card-header">Profile</div>
+       <div class="card-body">
+         <div class="row">
+           <div class="col">
+             <form>
+               <div class="form-group">
+               <p>輸入Facebook個人介紹連結(可多個),並以逗號隔開 :</p>
+               <!-- <label for="inputLink">輸入Facebook個人介紹連結(可多個),並以逗號隔開 :</label> -->
+               <textarea  class="form-control" id="inputArea"
                 placeholder="facebook.com/profile.ph.?id=example"
-                rows="3"
-                v-model="inputLinks"
-                style="word-wrap : break-word;"
-              ></textarea>
-            </div>
-          </form>
-        </div>
-      </div>
-      <p>Profile結果:</p>
-      <table class="table" id="profileTable">
-        <thead>
-          <tr class="table-active">
-            <th data-field="id">ID</th>
-            <th data-field="link" colspan="4">link</th>
-            <th data-field="progress">progress</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in showProfileList(profileData)" :key="item">
-            <th>{{ item.id }}</th>
-            <th colspan="4" style="word-break:break-all;">{{ item.link }}</th>
-            <th>
-              <span class="fui-check" v-if="item.data !== ''" style="color:#32CD32;"></span>
-            </th>
-          </tr>
-        </tbody>
-      </table>
-      <button class="button" id="button" v-on:click="saveInputLink">
-        <span class="fui-search"></span> 送出連結
-      </button>
-      <button class="button" id="downloadBtn" v-on:click="downloadProfileData">
-        <span class="fui-clip"></span> 下載結果
-      </button>
+                rows="3" v-model="inputLinks" style="word-wrap : break-word;">
+               </textarea>
+              </div>            
+             </form>
+           </div>
+         </div>
 
-      <!-- 留言區塊 -->
-      <p>Comment結果:</p>
-      <table class="table" id="commentTable">
-        <thead>
-          <tr class="table-active">
-            <th data-field="id2">ID</th>
-            <th data-field="name">name</th>
-            <th colspan="4" data-field="content">comment</th>
-            <th data-field="level">level</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in showCommentList(commentData)" :key="item">
-            <th>{{ item.id }}</th>
-            <th>{{ item.name }}</th>
-            <th colspan="4" style="word-break:break-all;">{{ item.content }}</th>
-            <th>{{ item.level }}</th>
-          </tr>
-        </tbody>
-      </table>
+         <p>Profile結果:</p>
+         <table class="table" id="profileTable">
+           <thead>
+             <tr class="table-active">
+               <th data-field="id">ID</th>
+               <th data-field="link" colspan="4">link</th>
+               <th data-field="progress">progress</th>
+            </tr>
+           </thead>
+           <tbody>
+             <tr v-for="item in showProfileList(profileData)" :key="item">
+               <th>{{ item.id }}</th>
+               <th colspan="4" style="word-break:break-all;">{{ item.link }}</th>
+               <th style="text-align: center">
+                <span class="fui-check" v-if="item.data !== ''" style="color:#32CD32;"></span>
+               </th>
+             </tr>
+           </tbody>
+         </table>
+         <div>
+         <button class="button" id="button" v-on:click="saveInputLink">
+           <span class="fui-search"></span> 送出連結
+         </button>
+         <button class="button" id="downloadProfileBtn" v-on:click="downloadProfileData">
+           <span class="fui-clip"></span> 下載結果
+         </button> 
+         <button class="button" id="clearProfileBtn" v-on:click="clearProfileData">
+           <span class="fui-trash"></span> 清除profile資料
+         </button> 
+         </div>
+       </div>
+     </div>
 
+     <!-- 留言區塊 -->
+     
+     <div class="card border-secondary">
+       <div class="card-header">Comment</div>
+       <div class="card-body">
+          <p>Comment結果:</p>
+          <table class="table" id="commentTable">
+            <thead>
+              <tr class="table-active">
+                <th data-field="id2">ID</th>
+                <th data-field="name">name</th>
+                <th colspan="4" data-field="content">comment</th>
+                <th data-field="level">level</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in showCommentList(commentData)" :key="item">
+                <th>{{ item.id }}</th>
+                <th>{{ item.name }}</th>
+                <th colspan="4" style="word-break:break-all;">{{ item.content }}</th>
+                <th>{{ item.level }}</th>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <button class="button" id="commentBtn" v-on:click="fetchComment">
+              <span class="fui-bubble"></span> 取得留言
+            </button>
+            <button class="button" id="downloadCommentBtn" v-on:click="downloadCommentData">
+              <span class="fui-clip"></span> 下載結果
+            </button>
+            <button class="button" id="clearCommentBtn" v-on:click="clearCommentData">
+              <span class="fui-trash"></span> 清除comment資料
+             </button> 
 
-      <button class="button" id="commentBtn" v-on:click="fetchComment">
-        <span class="fui-bubble"></span> 取得留言
-      </button>
-      <button class="button" id="downloadCommentBtn" v-on:click="downloadCommentData">
-        <span class="fui-clip"></span> 下載結果
-      </button>
+          </div>
+
+       </div>
+     </div>
     </div>
   </div>
 </template>
@@ -95,11 +112,11 @@ export default {
     saveInputLink: function() {
       console.log("start to save origin  input links");
       //清除儲存區中的 個人介紹物件
-      console.log("input links:", this.inputLinks);
+      //console.log("input links:", this.inputLinks);
       chrome.storage.local.set({ profile: { data: "", state: "" } }, function() {});
       //處理連結
-      //console.log('this.inputLinks:', this.inputLinks);
-      if (this.inputLinks !== null || this.inputLinks.trim() !== "") {
+      if(this.inputLinks == null || this.inputLinks.trim() == "") console.log('no input');
+      else{
         let links = this.inputLinks.split(",");
         var link_arr = [];
         var j = 1;
@@ -126,7 +143,8 @@ export default {
         chrome.storage.local.set({ profile: { data: link_obj } }, function() {
           console.log("save origin links finish");
         });
-      }
+
+      }  
     },
 
     downloadProfileData: function() {
@@ -157,6 +175,10 @@ export default {
           hiddenElement.click();
         }
       });
+    },
+
+    clearProfileData: function() {
+      chrome.storage.local.set({comment: { state: "", data: "" }}, function() {});
     },
 
     showProfileList: function(items) {
@@ -220,6 +242,10 @@ export default {
       chrome.storage.local.set({comment: { state: "", data: "" }}, function() {});
       //寫入儲存區key:comment的value
       chrome.storage.local.set({ comment: { state: "fetch_comment", data: "" } }, function() {});
+    },
+
+    clearCommentData: function() {
+      chrome.storage.local.set({comment: { state: "", data: "" }}, function() {});
     }
   },
 
@@ -307,10 +333,7 @@ export default {
                   origin_item[key],
                   "start to fetch profile data"
                 );
-                chrome.storage.local.set(
-                  { profile: { data: origin_item } },
-                  function() {}
-                );
+                chrome.storage.local.set({ profile: { data: origin_item } }, function() {});
                 break;
               }
             }
@@ -326,5 +349,11 @@ export default {
 #app {
   width: 500px;
   font-family: Microsoft JhengHei;
+}
+p {
+    font-size: 16px;
+}
+.card{
+  margin: 10px;
 }
 </style>
