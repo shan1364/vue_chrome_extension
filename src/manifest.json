@@ -7,20 +7,20 @@
     "48": "icons/icon_48.png",
     "128": "icons/icon_128.png"
   },
-  "page_action": {
-    "default_title": "project",
+  "browser_action": {
+    "default_title": "臉書小擴件",
     "default_icon": "icons/icon_128.png",
     "default_popup": "popup/popup.html"
   },
   "background": {
-    "scripts": [ "background.js"],
-    "persistent": false
+    "scripts": [ "background.js"]
   },
   "content_scripts" : [ 
 		{
-			"matches" : ["*://www.facebook.com/*"],
+			"matches" : ["<all_urls>"],
 			"js" : ["content.js"]
 		}
   ],
-  "permissions" : ["tabs", "activeTab", "storage", "unlimitedStorage"]
+  "permissions" : ["tabs", "activeTab", "storage", "unlimitedStorage", "webRequest", 
+    "webRequestBlocking", "<all_urls>" ]
 }
